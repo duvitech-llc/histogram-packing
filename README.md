@@ -58,6 +58,12 @@ histogram-packing/
    python view_histogram_from_packed.py
    ```
    
+3. **Unpack histograms:**
+   ```bash
+   python unpack_histograms.py
+   python binary_compare.py 
+   ```
+
 ### For PC (GCC)
 1. **Clone the Repository:**
    ```bash
@@ -73,4 +79,9 @@ histogram-packing/
 3. **Clean Build Artifacts:**
    ```bash
    make clean
+   ```
+
+4. **Binary compare packed files:**
+   ```bash
+   cmp histograms_c.pack image_patterns/histograms.pack 
    ```
