@@ -8,6 +8,48 @@
 #define BYTES_PER_BIN 21   // 8 counts * 21 bits = 168 bits = 21 bytes per bin
 #define TOTAL_BYTES   (NUM_BINS * BYTES_PER_BIN)
 
+
+/**
+ * Unpacks the packed histogram data from input_buffer into the histograms array.
+ *
+ * @param input_buffer   Pointer to the packed 21504-byte buffer.
+ * @param histograms     A 2D array to store the unpacked histogram counts.
+ *                       Organized as histograms[NUM_CAMERAS][NUM_BINS].
+ */
+void unpack_histograms(uint8_t *input_buffer, uint32_t histograms[NUM_CAMERAS][NUM_BINS])
+{
+    // Process each bin.
+    for (size_t bin = 0; bin < NUM_BINS; bin++) {
+        // Create a temporary 192-bit (6 x 32-bit words) container.
+        // We only use the lower 168 bits.
+        uint32_t packed[6] = {0};
+
+        // Copy 21 bytes from the input buffer into our temporary container.
+        // This assumes the system is little-endian.
+        memcpy(packed, input_buffer + (bin * BYTES_PER_BIN), BYTES_PER_BIN);
+
+        int bit_pos = 0; // Current bit position in the 192-bit container.
+
+        // Extract each camera's count (21 bits each) from the packed data.
+        for (size_t cam = 0; cam < NUM_CAMERAS; cam++) {
+            int word_index = bit_pos / 32;
+            int bit_offset = bit_pos % 32;
+
+            if (bit_offset <= 11) { // Entire 21 bits fit in a single 32-bit word.
+                uint32_t mask = (1U << 21) - 1;
+                histograms[cam][bin] = (packed[word_index] >> bit_offset) & mask;
+            } else {
+                // The 21-bit value spans two 32-bit words.
+                int bits_in_first = 32 - bit_offset;
+                uint32_t lower = packed[word_index] >> bit_offset;
+                uint32_t upper = packed[word_index + 1] & ((1U << (21 - bits_in_first)) - 1);
+                histograms[cam][bin] = lower | (upper << bits_in_first);
+            }
+            bit_pos += 21;
+        }
+    }
+}
+
 //---------------------------------------------------------------------------
 // Function: pack_histograms
 //
