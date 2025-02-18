@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.dpf": "yaml",
+        "*.ui": "xml",
+        "stddef.h": "c"
+    }
+}

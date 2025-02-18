@@ -1,0 +1,34 @@
+# Compiled object files
+*.o
+
+# Precompiled headers
+*.gch
+
+# Executable files
+histpack
+*.exe
+*.out
+
+# Static and shared libraries
+*.a
+*.so
+
+# Debug files and directories
+*.dSYM/
+
+# Generated output files (e.g. the packed histogram file)
+histograms_c.pack
+
+# Build directories
+build/
+bin/
+image_patterns/
+
+# Backup and temporary files
+*~
+*.swp
+*.tmp
+*.bak
+
+# System files (macOS)
+.DS_Store
